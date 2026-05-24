@@ -1,0 +1,411 @@
+:root {
+  --bg: #0f0f0f;
+  --panel-bg: #1a1a1a;
+  --border: #2a2a2a;
+  --text: #e0e0e0;
+  --text-dim: #888;
+  --accent: #e10600;
+  --green: #22c55e;
+  --blue: #3b82f6;
+  --yellow: #eab308;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app.waiting {
+  justify-content: center;
+  align-items: center;
+}
+
+.waiting-content {
+  text-align: center;
+}
+
+.waiting-content p {
+  margin-top: 0.5rem;
+  color: var(--text-dim);
+}
+
+.waiting-content code {
+  background: var(--panel-bg);
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
+  color: var(--green);
+}
+
+.hint {
+  font-size: 0.85rem;
+}
+
+/* Header */
+.session-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background: var(--panel-bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-left,
+.header-center,
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pitwall-logo {
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  color: var(--accent);
+}
+
+.pitwall-logo.large {
+  font-size: 2.5rem;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-dot.connected {
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+}
+
+.status-dot.disconnected {
+  background: var(--accent);
+}
+
+.status-text {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.track-name {
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 1px;
+}
+
+.session-type {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  background: var(--border);
+  padding: 0.15em 0.5em;
+  border-radius: 3px;
+}
+
+.session-time {
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Dashboard layout */
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  flex: 1;
+}
+
+.col-left,
+.col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Panels */
+.panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+}
+
+.panel-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  margin-bottom: 0.75rem;
+}
+
+/* Speed Panel */
+.speed-panel {
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.speed-value {
+  font-size: 5rem;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.speed-unit {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  margin-top: 0.25rem;
+}
+
+.gear-display {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+  color: var(--accent);
+}
+
+.rpm-bar-container {
+  position: relative;
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  margin-top: 0.75rem;
+  overflow: hidden;
+}
+
+.rpm-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), var(--yellow), var(--accent));
+  border-radius: 4px;
+  transition: width 50ms linear;
+}
+
+.rpm-bar[data-high] {
+  animation: rpm-flash 0.15s infinite alternate;
+}
+
+@keyframes rpm-flash {
+  to { opacity: 0.6; }
+}
+
+.rpm-label {
+  position: absolute;
+  right: 0;
+  top: -18px;
+  font-size: 0.65rem;
+  color: var(--text-dim);
+}
+
+/* Input Bars */
+.input-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.input-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  width: 2.5rem;
+}
+
+.bar-track {
+  flex: 1;
+  height: 12px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 50ms linear;
+}
+
+.bar-fill.throttle {
+  background: var(--green);
+}
+
+.bar-fill.brake {
+  background: var(--accent);
+}
+
+.bar-fill.ers {
+  background: var(--yellow);
+}
+
+.input-value {
+  font-size: 0.75rem;
+  width: 2.5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ERS Panel */
+.ers-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.ers-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ers-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  width: 2.5rem;
+}
+
+.ers-mode {
+  font-size: 0.75rem;
+  font-weight: 600;
+  width: 5rem;
+  text-align: right;
+}
+
+.drs-status {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.drs-status.active {
+  color: var(--green);
+}
+
+.drs-status.available {
+  color: var(--yellow);
+}
+
+.drs-status.off {
+  color: var(--text-dim);
+}
+
+.fuel-value {
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tyre Panel */
+.tyre-panel {
+  text-align: center;
+}
+
+.tyre-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+.tyre {
+  border: 3px solid;
+  border-radius: 8px;
+  padding: 0.75rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tyre span {
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.tyre small {
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  margin-top: 0.2rem;
+}
+
+/* Lap Table */
+.lap-panel {
+  flex: 1;
+}
+
+.lap-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.lap-table th {
+  text-align: left;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.lap-table td {
+  padding: 0.4rem 0.5rem;
+  font-variant-numeric: tabular-nums;
+  border-bottom: 1px solid var(--border);
+}
+
+.lap-table tr:last-child td {
+  border-bottom: none;
+}
+
+.lap-table .fastest-lap {
+  background: rgba(144, 0, 255, 0.08);
+}
+
+.lap-table td.purple {
+  color: #a855f7;
+  font-weight: 700;
+}
+
+.lap-table td.dim {
+  color: var(--text-dim);
+}
+
+.lap-table .current-lap-row {
+  border-left: 2px solid var(--accent);
+}
+
+.lap-table .current-lap-row td {
+  font-weight: 600;
+}
+
+.lap-table .current-lap-row td.purple {
+  color: #a855f7;
+}

@@ -1,0 +1,16 @@
+# Rust
+pitwall/target/
+
+# Node
+pitwall-ui/node_modules/
+pitwall-ui/dist/
+
+# Data (large binary files)
+pitwall/pitwall_data/recordings/*.pitraw
+pitwall/pitwall_data/sessions/**/*.parquet
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/

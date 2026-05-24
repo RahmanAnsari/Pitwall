@@ -1,0 +1,17 @@
+# Build
+/target
+
+# Runtime data
+/pitwall_data
+*.pitraw
+*.parquet
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
