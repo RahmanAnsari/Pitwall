@@ -409,3 +409,37 @@ body {
 .lap-table .current-lap-row td.purple {
   color: #a855f7;
 }
+
+/* Track Map */
+.track-map-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.track-map-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+  padding: 0.5rem;
+}
+
+.track-map-svg {
+  width: 100%;
+  max-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.track-map-svg svg {
+  width: 100%;
+  height: auto;
+  max-height: 180px;
+}
+
+.track-map-fallback {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}

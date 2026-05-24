@@ -4,7 +4,8 @@ use std::sync::Arc;
 use std::net::SocketAddr;
 
 use axum::{
-    extract::{State, WebSocketUpgrade, ws::{Message, WebSocket}},
+    extract::{State, Path, WebSocketUpgrade, ws::{Message, WebSocket}},
+    http::{StatusCode, header},
     response::IntoResponse,
     routing::get,
     Router,
@@ -193,10 +194,48 @@ impl WsBroadcaster {
     }
 }
 
+/// Serve a circuit SVG by track name.
+async fn circuit_svg_handler(Path(name): Path<String>) -> impl IntoResponse {
+    let safe_name = name.replace(|c: char| !c.is_alphanumeric() && c != '_' && c != '-', "");
+    let filename = format!("{}.svg", safe_name);
+
+    // Use CARGO_MANIFEST_DIR baked in at compile time as the reliable base path
+    let manifest_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("circuits/svg")
+        .join(&filename);
+
+    // Also try CWD-relative as fallback (for installed binaries)
+    let cwd_path = std::path::PathBuf::from("circuits/svg").join(&filename);
+
+    let path = if manifest_path.exists() {
+        &manifest_path
+    } else {
+        &cwd_path
+    };
+
+    info!("Circuit SVG request: name={:?} resolved={:?}", name, path);
+
+    match tokio::fs::read_to_string(path).await {
+        Ok(svg) => (
+            StatusCode::OK,
+            [
+                (header::CONTENT_TYPE, "image/svg+xml"),
+                (header::ACCESS_CONTROL_ALLOW_ORIGIN, "*"),
+            ],
+            svg,
+        ).into_response(),
+        Err(e) => {
+            info!("Circuit SVG not found: {:?} error={}", path, e);
+            StatusCode::NOT_FOUND.into_response()
+        }
+    }
+}
+
 /// Start the WebSocket server on the given port.
 pub async fn start_server(broadcaster: WsBroadcaster, port: u16) -> anyhow::Result<()> {
     let app = Router::new()
         .route("/ws", get(ws_handler))
+        .route("/circuits/:name", get(circuit_svg_handler))
         .layer(CorsLayer::permissive())
         .with_state(Arc::new(broadcaster));
 

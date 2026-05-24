@@ -1,5 +1,6 @@
 import { useTelemetry } from "./hooks/useTelemetry";
 import { SessionHeader } from "./components/SessionHeader";
+import { TrackMap } from "./components/TrackMap";
 import { SpeedPanel } from "./components/SpeedPanel";
 import { InputBars } from "./components/InputBars";
 import { TyreTemps } from "./components/TyreTemps";
@@ -53,6 +54,7 @@ function App() {
       />
       <main className="dashboard">
         <div className="col-left">
+          <TrackMap track={frame.track} />
           <SpeedPanel speed={frame.speed} rpm={frame.rpm} gear={frame.gear} />
           <InputBars throttle={frame.throttle} brake={frame.brake} />
           <ErsPanel

@@ -1,5 +1,6 @@
 # Build
 /target
+/circuits/svg
 
 # Runtime data
 /pitwall_data

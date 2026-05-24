@@ -297,11 +297,26 @@ GROUP BY lap_number;
 SELECT * FROM 'pitwall_data/sessions/2026/monza/abc-123-def/laps.parquet';
 ```
 
+## Circuit SVGs
+
+Track outline SVGs are auto-generated from GeoJSON source files during `cargo build` via `build.rs`.
+
+```
+pitwall/circuits/
+├── geojson/       ← source track outlines (checked in)
+│   └── sakhir.geojson
+└── svg/           ← generated at build time (gitignored)
+    └── sakhir.svg
+```
+
+To add a new track: drop a `.geojson` file with a LineString geometry into `circuits/geojson/` and rebuild. The build script normalizes coordinates to a 0–1 space with aspect-ratio correction and outputs a clean SVG polyline.
+
 ## Architecture
 
 ```
 pitwall/src/
 ├── main.rs          CLI (clap) - command routing
+├── build.rs         Build script - generates circuit SVGs from GeoJSON
 ├── packets.rs       F1 24 UDP structs (repr(C, packed), zero-copy via bytemuck)
 ├── parsers.rs       Zero-copy packet parsing from raw bytes
 ├── session.rs       Session state machine, sample merging, lap detection

@@ -52,7 +52,7 @@ F1 24 Game → UDP packets → receiver.rs → SessionState → WsBroadcaster �
 ## Build & Test Workflow
 
 ```bash
-# Build Rust backend
+# Build Rust backend (also generates circuit SVGs from geojson via build.rs)
 cd pitwall && cargo build
 
 # Build React frontend
@@ -63,6 +63,12 @@ cd pitwall-ui && npm run build
 # T2: cargo run -- sim pitwall_data/recordings/<id>.pitraw
 # T3: cd pitwall-ui && npm run dev
 ```
+
+## Circuit Assets
+
+- Source GeoJSON track outlines live in `pitwall/circuits/geojson/`
+- `build.rs` generates normalized SVGs into `circuits/svg/` on each `cargo build`
+- SVGs are gitignored (build artifacts). To add a track, drop a `.geojson` with a LineString geometry into the geojson folder and rebuild.
 
 ## Storage
 
