@@ -12,30 +12,30 @@
       },
       "geometry": {
         "type": "Point",
-        "coordinates": [ 50.512433, 26.031922 ]
+        "coordinates": [50.510361, 26.029414]
       }
     },
 {
-      "type": "Feature",
-      "properties": {
-        "id": "bh-2002-sector1",
-        "Name": "Sector 1 Split"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [ 50.518091, 26.035702 ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "bh-2002-sector2",
-        "Name": "Sector 2 Split"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [ 50.517026, 26.030216 ]
-      }
-    }
+  "type": "Feature",
+  "properties": {
+    "id": "bh-2002-sector1",
+    "Name": "Sector 1 Split"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [50.516759, 26.033987]
+  }
+},
+{
+  "type": "Feature",
+  "properties": {
+    "id": "bh-2002-sector2",
+    "Name": "Sector 2 Split"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [50.516215, 26.030578]
+  }
+}
 ]
 }

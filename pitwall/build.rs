@@ -68,14 +68,24 @@ fn geojson_to_svg(json_str: &str) -> String {
     }
 
     // Add padding so the thick stroke doesn't clip at edges
-    let padding = 0.025;
+    // Must be at least half the thickest stroke width (0.028/2 = 0.014) plus margin
+    let padding = 0.04;
     let svg_w = width / scale + padding * 2.0;
     let svg_h = height / scale + padding * 2.0;
+
+    // If the track is taller than wide, rotate by swapping x/y coordinates
+    let landscape = svg_h > svg_w;
+    let (final_w, final_h) = if landscape { (svg_h, svg_w) } else { (svg_w, svg_h) };
 
     let normalize = |lng: f64, lat: f64| -> (f64, f64) {
         let x = (lng - min_lng) * cos_lat / scale + padding;
         let y = (max_lat - lat) / scale + padding;
-        (x, y)
+        if landscape {
+            // Rotate 90°: new_x = old_y, new_y = svg_w - old_x
+            (y, svg_w - x)
+        } else {
+            (x, y)
+        }
     };
 
     let normalized: Vec<(f64, f64)> = coords.iter().map(|(lng, lat)| normalize(*lng, *lat)).collect();
@@ -84,10 +94,15 @@ fn geojson_to_svg(json_str: &str) -> String {
     let full_path_d = smooth_path_with_tension(&normalized, true, 0.15);
 
     // Build sector paths or fallback
+    let mut start_finish_marker = String::new();
     let sector_paths = if let (Some(sf), Some(s1), Some(s2)) = (start_finish, sector1_split, sector2_split) {
         let sf_idx = find_closest_index(&coords, sf);
         let s1_idx = find_closest_index(&coords, s1);
         let s2_idx = find_closest_index(&coords, s2);
+
+        // Get the normalized start/finish position for the marker
+        let sf_pos = normalized[sf_idx];
+        start_finish_marker = format_checkered_flag(sf_pos.0, sf_pos.1);
 
         let len = normalized.len();
         let fwd_dist = if s1_idx >= sf_idx { s1_idx - sf_idx } else { len - sf_idx + s1_idx };
@@ -120,27 +135,54 @@ fn geojson_to_svg(json_str: &str) -> String {
     // Layer 2: Slightly less thick dark border
     // Layer 3: Colored sector lines on top
     let track_bg = format!(
-        "  <path d=\"{}\" stroke=\"#1a1a2e\" stroke-width=\"0.028\" />",
+        "  <path d=\"{}\" stroke=\"#3d3d5c\" stroke-width=\"0.028\" />",
         full_path_d
     );
     let track_border = format!(
-        "  <path d=\"{}\" stroke=\"#2d2d44\" stroke-width=\"0.020\" />",
+        "  <path d=\"{}\" stroke=\"#2a2a40\" stroke-width=\"0.020\" />",
         full_path_d
     );
 
     format!(
-        "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {svg_w:.5} {svg_h:.5}\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n{track_bg}\n{track_border}\n{sectors}\n</svg>",
-        svg_w = svg_w,
-        svg_h = svg_h,
-        track_bg = track_bg,
-        track_border = track_border,
-        sectors = sector_paths.join("\n")
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {w:.5} {h:.5}\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n{bg}\n{border}\n{sectors}\n{marker}\n</svg>",
+        w = final_w,
+        h = final_h,
+        bg = track_bg,
+        border = track_border,
+        sectors = sector_paths.join("\n"),
+        marker = start_finish_marker
     )
 }
 
 fn format_smooth_path(points: &[(f64, f64)], color: &str) -> String {
     let d = smooth_path_with_tension(points, false, 0.25);
     format!("  <path d=\"{}\" stroke=\"{}\" stroke-width=\"0.012\" />", d, color)
+}
+
+/// Generate a small checkered flag icon at the given position.
+/// Positioned above the track line (offset upward).
+fn format_checkered_flag(cx: f64, cy: f64) -> String {
+    // 4x4 checkered pattern, offset above the point
+    let size = 0.020;
+    let cell = size / 4.0;
+    let x0 = cx - size / 2.0;
+    let y0 = cy - size - 0.018; // move above the line (negative Y = up in SVG)
+
+    let mut rects = String::new();
+    for row in 0..4 {
+        for col in 0..4 {
+            let is_dark = (row + col) % 2 == 0;
+            let fill = if is_dark { "#ffffff" } else { "#000000" };
+            let rx = x0 + col as f64 * cell;
+            let ry = y0 + row as f64 * cell;
+            rects.push_str(&format!(
+                "    <rect x=\"{:.5}\" y=\"{:.5}\" width=\"{:.5}\" height=\"{:.5}\" fill=\"{}\" />\n",
+                rx, ry, cell, cell, fill
+            ));
+        }
+    }
+
+    format!("  <g>\n{}</g>", rects)
 }
 
 /// Generate a smooth SVG path using Catmull-Rom to cubic Bezier conversion.
