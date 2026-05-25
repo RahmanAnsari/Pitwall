@@ -414,28 +414,25 @@ body {
 .track-map-panel {
   display: flex;
   flex-direction: column;
+  min-height: 360px;
 }
 
 .track-map-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 140px;
-  padding: 0.5rem;
+  flex: 1;
+  padding: 0.75rem 1rem;
 }
 
 .track-map-svg {
   width: 100%;
-  max-height: 180px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: 280px;
 }
 
 .track-map-svg svg {
   width: 100%;
-  height: auto;
-  max-height: 180px;
+  height: 100%;
 }
 
 .track-map-fallback {
